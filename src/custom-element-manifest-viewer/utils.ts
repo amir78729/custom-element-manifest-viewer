@@ -81,6 +81,7 @@ export function renderKnob({
   }
   if (type?.includes('|')) {
     const options = type?.split('|')?.map((option) => removeQuotes(option));
+
     return html`
       <code part="label">${removeBackticks(name)}</code>
       <select
@@ -90,10 +91,7 @@ export function renderKnob({
       >
         ${options.map(
           (option) =>
-            html` <option
-              selected=${option === defaultValue}
-              value=${option}
-            >
+            html` <option ?selected=${option === defaultValue} value=${option}>
               <code>${option}</code>
             </option>`,
         )}

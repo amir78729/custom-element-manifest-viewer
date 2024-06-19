@@ -21,8 +21,6 @@ export class CustomElementManifestViewer extends LitElement {
 
   @state() propertyKnobs?: Record<string, unknown> = {};
 
-  @state() cssPropertiesKnobs?: Record<string, unknown> = {};
-
   @state() slotKnobs: Record<string, Record<string, string>> = {};
 
   @state() selectedSlots: Record<string, string> = {};
@@ -37,8 +35,17 @@ export class CustomElementManifestViewer extends LitElement {
 
   private renderSlots() {
     let content = Object.keys(this.slotKnobs).length > 0 ? '\n' : '';
-    Object.entries(this.slotKnobs)?.forEach(([key, value]) => {
-      content += `  ${Object.values(value).includes(this.selectedSlots[key]) ? this.selectedSlots[key] : Object.values(value)[0]}\n`;
+    Object.entries(this.slotKnobs)?.forEach(([key]) => {
+      if (!this.selectedSlots[key]) {
+        this.selectedSlots[key] = Object.values(this.slotKnobs[key])[0];
+      }
+
+      let slotContent = this.selectedSlots[key];
+
+      if (key === 'default') {
+        slotContent = slotContent.replace(` slot="${key}"`, '');
+      }
+      content += `  ${slotContent}\n`;
     });
     return content;
   }
@@ -61,6 +68,27 @@ export class CustomElementManifestViewer extends LitElement {
     }
   }
 
+  private setSlotKnobs() {
+    const slot = this.querySelectorAll<HTMLSlotElement>(`[slot]`);
+    this.slotKnobs = produce(this.slotKnobs, (draft) => {
+      slot.forEach((slot) => {
+        if (slot.getAttribute('data-knob-type') === 'slot') {
+          const slotCategory = slot.getAttribute('slot');
+          const slotName = slot.getAttribute('title');
+          if (draft && slotName && slotCategory) {
+            if (!draft[slotCategory]) {
+              draft[slotCategory] = {};
+            }
+            draft[slotCategory][slotName] = slot.outerHTML.replace(
+              /\s(data-knob-type|title|style)="[^"]*"/g,
+              '',
+            );
+          }
+        }
+      });
+    });
+  }
+
   async connectedCallback() {
     super.connectedCallback();
     const manifest = await fetchManifest(this.src);
@@ -80,39 +108,19 @@ export class CustomElementManifestViewer extends LitElement {
           },
         );
       });
-      this.cssPropertiesKnobs = produce(this.cssPropertiesKnobs, (draft) => {
-        this.customElement?.cssProperties?.forEach((member) => {
-          if (draft) draft[member.name] = member.default;
-        });
-      });
     }
 
     this.highlighter = await getHighlighter({
       themes: ['github-dark-default'],
       langs: ['html'],
     });
+
+    this.setSlotKnobs();
+    this.updateCodeSample();
   }
 
   updated() {
-    const slot = this.querySelectorAll<HTMLSlotElement>(`[slot]`);
-    this.slotKnobs = produce(this.slotKnobs, (draft) => {
-      slot.forEach((slot) => {
-        if (slot.getAttribute('data-knob-type') === 'slot') {
-          const slotCategory = slot.getAttribute('slot');
-          const slotName = slot.getAttribute('title');
-          if (draft && slotName && slotCategory) {
-            if (!draft[slotCategory]) {
-              draft[slotCategory] = {};
-            }
-            draft[slotCategory][slotName] = slot.outerHTML.replace(
-              /\s(data-knob-type|title|style)="[^"]*"/g,
-              '',
-            );
-          }
-        }
-      });
-    });
-
+    this.setSlotKnobs();
     this.updateCodeSample();
   }
 
@@ -171,23 +179,26 @@ export class CustomElementManifestViewer extends LitElement {
   }
 
   private renderSlotsKnobs() {
-    return html`
-      <b>Slots</b>
-      ${Object.entries(this.slotKnobs).map(([slot]) => {
-        const type = Object.keys(this.slotKnobs?.[slot] || {}).join('|');
-        return renderKnob({
-          name: slot,
-          type: type,
-          // @ts-expect-error
-          onChange: (e: Event) => {
-            const input = e.target as HTMLInputElement;
-            const value = input.value;
-            this.handleChangeSlotKnob(slot, value);
-          },
-          defaultValue: this.selectedSlots[slot],
-        });
-      })}
-    `;
+    if (Object.keys(this.slotKnobs).length > 0)
+      return html`
+        <b>Slots</b>
+        ${Object.entries(this.slotKnobs).map(([slot]) => {
+          const type = Object.keys(this.slotKnobs?.[slot] || {}).join('|');
+          return renderKnob({
+            name: slot,
+            type: type,
+            // @ts-expect-error
+            onChange: (e: Event) => {
+              const input = e.target as HTMLInputElement;
+              const value = input.value;
+              this.handleChangeSlotKnob(slot, value);
+            },
+            defaultValue: Object.keys(this.slotKnobs[slot])[0],
+            // defaultValue: Object.values(this.slotKnobs[slot])[0],
+          });
+        })}
+      `;
+    return nothing;
   }
 
   render() {
