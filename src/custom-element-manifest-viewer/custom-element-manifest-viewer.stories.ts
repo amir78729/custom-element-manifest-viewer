@@ -90,7 +90,7 @@ interface ArgTypes {
 }
 
 const Template: Story<ArgTypes> = ({ tagName}) => html`
-  <custom-element-manifest-viewer tag-name=${tagName} src='/sample-custom-elements.json'>
+  <custom-element-manifest-viewer tag-name=${tagName} src='../public/sample-custom-elements.json'>
   </custom-element-manifest-viewer>
 `;
 
@@ -102,7 +102,7 @@ Default.args = {
 };
 
 const Slots: Story<ArgTypes> = ({ tagName}) => html`
-  <custom-element-manifest-viewer tag-name='tap-row' src='/sample-custom-elements.json'>
+  <custom-element-manifest-viewer tag-name='tap-row' src='../public/sample-custom-elements.json'>
     <tap-icon-default color="black" data-knob-type="slot" slot="leading" title="icon"></tap-icon-default>
     <tap-checkbox data-knob-type="slot" slot="leading" title="checkbox"></tap-checkbox>
     <tap-radio data-knob-type="slot" slot="leading" title="radio"></tap-radio>
@@ -194,7 +194,7 @@ const Theme: Story<ArgTypes> = ({ tagName}) => html`
       border-radius: 0 0 8px 8px;
     }
   </style>
-  <custom-element-manifest-viewer tag-name=${tagName} src='/sample-custom-elements.json'>
+  <custom-element-manifest-viewer tag-name=${tagName} src='../public/sample-custom-elements.json'>
   </custom-element-manifest-viewer>
 `;
 
