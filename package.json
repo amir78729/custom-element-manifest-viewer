@@ -1,6 +1,7 @@
 {
   "name": "custom-element-manifest-viewer",
-  "version": "0.0.0-alpha-2",
+  "author": "Amirhossein Alibakhshi",
+  "version": "0.0.1",
   "files": [
     "dist/**/*.js",
     "dist/**/*.js.map",
@@ -9,17 +10,9 @@
   ],
   "type": "module",
   "scripts": {
-    "publish": "pnpm build && pnpm deploy",
     "build": "rm -rf dist && tsc && pnpm analyze && cp -r ./tokens ./dist && cp -r ./styles ./dist",
-    "dev": "tsc --watch --preserveWatchOutput & wds",
     "storybook": "storybook dev -p 3001",
-    "test": "wtr --watch",
-    "lint": "pnpm eslint ./src/**/* --fix",
-    "fmt": "pnpm prettier src/**/* --write --fix",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs",
-    "analyze": "cem analyze  --litelement --outdir dist --globs \"src/**/index.ts\""
+    "build-storybook": "storybook build"
   },
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "^0.10.2",
@@ -50,6 +43,7 @@
     "prettier": "^3.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "shiki": "^1.7.0",
     "storybook": "^7.6.16",
     "tslib": "^2.6.2",
     "typescript": "^5.3.3",

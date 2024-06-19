@@ -1,35 +1,21 @@
-import { html, LitElement, nothing } from "lit";
-import { property, query, state } from "lit/decorators.js";
-
-import { produce } from "immer";
-
-import type { CustomElement } from "custom-elements-manifest/schema";
-import { fetchManifest } from "./utils";
-
-const removeQuotes = (string: string) =>
-  string?.trim()?.replaceAll("'", "")?.replaceAll('"', "");
-
-const getAttributes = (properties: Record<string, unknown>): string => {
-  return (
-    Object.entries(properties)
-      // .filter(([key, value]) => !["false"].includes(value))
-      .filter(([key, value]) => value)
-      .map(
-        ([key, value]) =>
-          `${key}${value !== true ? `=${typeof value === "string" ? '"' : ""}${typeof value === "string" ? removeQuotes(value) : value}${typeof value === "string" ? '"' : ""}` : ""}`,
-      )
-      .join(" ")
-      .replaceAll(`"false"`, "false")
-      .replaceAll(`"true"`, "true")
-      .replaceAll(`'false'`, "false")
-      .replaceAll(`'true'`, "true")
-  );
-};
+import { html, LitElement, nothing } from 'lit';
+import { property, query, state } from 'lit/decorators.js';
+import { produce } from 'immer';
+import type { CustomElement } from 'custom-elements-manifest/schema';
+import {
+  fetchManifest,
+  getAttributes,
+  removeBackticks,
+  removeQuotes,
+  renderKnob,
+} from './utils';
+import { getHighlighter, Highlighter } from 'shiki';
+import type { PropertyLike } from 'custom-elements-manifest';
 
 export class CustomElementManifestViewer extends LitElement {
-  @property() src: string = "";
+  @property() src: string = '';
 
-  @property({ attribute: "tag-name" }) tagName: string = "";
+  @property({ attribute: 'tag-name' }) tagName: string = '';
 
   @state() customElement?: CustomElement;
 
@@ -37,14 +23,41 @@ export class CustomElementManifestViewer extends LitElement {
 
   @state() cssPropertiesKnobs?: Record<string, unknown> = {};
 
-  @state() codeSample?: string = "";
+  @state() slotKnobs: Record<string, Record<string, string>> = {};
 
-  @query("#component-preview") componentPreview?: HTMLElement;
+  @state() selectedSlots: Record<string, string> = {};
 
-  updateCodeSample() {
+  @state() codeSample?: string = '';
+
+  private highlighter?: Highlighter;
+
+  @query('#component-preview') componentPreview?: HTMLElement;
+
+  @query('#code') codeSection?: HTMLElement;
+
+  private renderSlots() {
+    let content = Object.keys(this.slotKnobs).length > 0 ? '\n' : '';
+    Object.entries(this.slotKnobs)?.forEach(([key, value]) => {
+      content += `  ${Object.values(value).includes(this.selectedSlots[key]) ? this.selectedSlots[key] : Object.values(value)[0]}\n`;
+    });
+    return content;
+  }
+
+  private updateCodeSample() {
     if (this.componentPreview && this.propertyKnobs) {
-      this.codeSample = `<${this.customElement?.tagName} ${getAttributes(this.propertyKnobs)}>test</${this.customElement?.tagName}>`;
+      this.codeSample = `<${this.customElement?.tagName} ${getAttributes(this.propertyKnobs)}>${this.renderSlots()}</${this.customElement?.tagName}>`;
       this.componentPreview.innerHTML = this.codeSample;
+    }
+
+    if (this.codeSample) {
+      const highlightedCode = this.highlighter?.codeToHtml(this.codeSample, {
+        lang: 'html',
+        theme: 'github-dark-default',
+      });
+      if (this.codeSection) {
+        if (highlightedCode) this.codeSection.innerHTML = highlightedCode;
+        else this.codeSection.innerText = this.codeSample;
+      }
     }
   }
 
@@ -53,118 +66,103 @@ export class CustomElementManifestViewer extends LitElement {
     const manifest = await fetchManifest(this.src);
     if (manifest) {
       this.customElement = manifest.modules?.find(
-        (module) => module.declarations?.[0]?.tagName === this.tagName,
+        (module) =>
+          (module.declarations?.[0] as CustomElement)?.tagName === this.tagName,
       )?.declarations?.[0] as CustomElement;
-    }
-    this.propertyKnobs = produce(this.propertyKnobs, (draft) => {
-      this.customElement?.members?.forEach((member) => {
-        draft[member.name] = ["true", "false"].includes(member.default)
-          ? member.default === "true"
-          : removeQuotes(member.default);
-      });
-    });
 
-    this.cssPropertiesKnobs = produce(this.cssPropertiesKnobs, (draft) => {
-      this.customElement?.cssProperties?.forEach((member) => {
-        draft[member.name] = member.default;
+      this.propertyKnobs = produce(this.propertyKnobs, (draft) => {
+        (this.customElement?.members as PropertyLike[])?.forEach(
+          (member: PropertyLike) => {
+            if (draft && member.default != null)
+              draft[member.name] = ['true', 'false'].includes(member.default)
+                ? member.default === 'true'
+                : removeQuotes(member.default);
+          },
+        );
       });
+      this.cssPropertiesKnobs = produce(this.cssPropertiesKnobs, (draft) => {
+        this.customElement?.cssProperties?.forEach((member) => {
+          if (draft) draft[member.name] = member.default;
+        });
+      });
+    }
+
+    this.highlighter = await getHighlighter({
+      themes: ['github-dark-default'],
+      langs: ['html'],
     });
   }
 
   updated() {
+    const slot = this.querySelectorAll<HTMLSlotElement>(`[slot]`);
+    this.slotKnobs = produce(this.slotKnobs, (draft) => {
+      slot.forEach((slot) => {
+        if (slot.getAttribute('data-knob-type') === 'slot') {
+          const slotCategory = slot.getAttribute('slot');
+          const slotName = slot.getAttribute('title');
+          if (draft && slotName && slotCategory) {
+            if (!draft[slotCategory]) {
+              draft[slotCategory] = {};
+            }
+            draft[slotCategory][slotName] = slot.outerHTML.replace(
+              /\s(data-knob-type|title|style)="[^"]*"/g,
+              '',
+            );
+          }
+        }
+      });
+    });
+
     this.updateCodeSample();
   }
 
-  handleChangePropertyKnob(key: string, value: unknown) {
+  private handleChangePropertyKnob(key: string, value: unknown) {
     if (this)
       this.propertyKnobs = produce(this.propertyKnobs, (draft) => {
-        this.customElement?.members?.forEach((member) => {
-          draft[key] = typeof value === "string" ? removeQuotes(value) : value;
+        this.customElement?.members?.forEach(() => {
+          if (draft)
+            draft[key] =
+              typeof value === 'string' ? removeQuotes(value) : value;
         });
       });
   }
 
-  handleChangeCssPropertyKnob(key: string, value: unknown) {
+  private handleChangeSlotKnob(key: string, value: string) {
     if (this)
-      this.cssPropertiesKnobs = produce(this.cssPropertiesKnobs, (draft) => {
-        this.customElement?.cssProperties?.forEach((_) => {
-          draft[key] = value;
+      this.selectedSlots = produce(this.selectedSlots, (draft) => {
+        this.customElement?.slots?.forEach(() => {
+          if (draft) draft[key] = this.slotKnobs?.[key]?.[value];
         });
       });
   }
 
-  renderKnob({
-    name,
-    type,
-    description,
-    defaultValue,
-    onChange,
-  }: {
-    name?: string;
-    type?: string;
-    description?: string;
-    defaultValue?: string;
-    onChange: (name: string, value: string | boolean) => void;
-  }) {
-    if (type === "boolean") {
-      return html`<input
-        @change=${(e) => this.handleChangePropertyKnob(name, e.target.checked)}
-        type="checkbox"><code>${name}</code></input> `;
-    }
-    if (type === "string") {
-      return html`
-        <code>${name}</code>
-        <input
-          type="text"
-          placeholder=${description}
-          value=${defaultValue || ``}
-          @change=${(e) => {
-            this.handleChangePropertyKnob(name, e.target.value);
-          }}
-        />
-      `;
-    }
-    if (type === "number") {
-      return html`
-        <code>${name}</code>
-        <input
-          @change=${(e) => this.handleChangePropertyKnob(name, e.target.value)}
-          type="number"
-          placeholder=${description}
-          value=${defaultValue}
-        />
-      `;
-    }
-    if (type?.includes("|")) {
-      const options = type?.split("|")?.map((option) => removeQuotes(option));
-      return html`
-        <code>${name}</code>
-        <select
-          @change=${(e) => this.handleChangePropertyKnob(name, e.target.value)}
-          value=${removeQuotes(defaultValue)}
-        >
-          ${options.map(
-            (option) =>
-              html` <option value=${option}><code>${option}</code></option>`,
-          )}
-        </select>
-      `;
-    }
-  }
-
-  private renderProperties() {
+  private renderPropertiesKnobs() {
     return this.customElement?.members
       ? html`
-          <h2>Components Properties</h2>
+          <b part="title">Components Properties</b>
           ${this.customElement?.members?.map(
-            (property) =>
+            (property: PropertyLike) =>
               html` <div>
-                ${this.renderKnob({
-                  name: property?.name,
-                  type: property?.type?.text,
+                ${renderKnob({
+                  name: removeBackticks(property?.name),
+                  type: property?.type?.text
+                    ? removeBackticks(property.type.text)
+                    : 'string',
                   description: property?.description,
-                  defaultValue: property?.default,
-                  onChange: this.handleChangePropertyKnob,
+                  defaultValue:
+                    property?.default &&
+                    removeBackticks(removeQuotes(property.default)),
+                  // @ts-expect-error
+                  onChange: (e: Event) => {
+                    const input = e.target as HTMLInputElement;
+                    this.handleChangePropertyKnob(
+                      property?.name,
+                      property?.type?.text &&
+                        removeBackticks(property?.type?.text) === 'boolean'
+                        ? input.checked
+                        : input.value,
+                    );
+                  },
                 })}
               </div>`,
           )}
@@ -172,37 +170,37 @@ export class CustomElementManifestViewer extends LitElement {
       : nothing;
   }
 
-  private renderCssProps() {
-    return this.customElement?.members
-      ? html`
-          <h2>CSS Properties</h2>
-          ${this.customElement?.cssProperties?.map(
-            (cssProperty) =>
-              html` <div>
-                ${this.renderKnob({
-                  name: cssProperty?.name,
-                  description: cssProperty?.summary,
-                  type: "string",
-                  defaultValue: cssProperty.default,
-                  onChange: this.handleChangeCssPropertyKnob,
-                })}
-              </div>`,
-          )}
-        `
-      : nothing;
+  private renderSlotsKnobs() {
+    return html`
+      <b>Slots</b>
+      ${Object.entries(this.slotKnobs).map(([slot]) => {
+        const type = Object.keys(this.slotKnobs?.[slot] || {}).join('|');
+        return renderKnob({
+          name: slot,
+          type: type,
+          // @ts-expect-error
+          onChange: (e: Event) => {
+            const input = e.target as HTMLInputElement;
+            const value = input.value;
+            this.handleChangeSlotKnob(slot, value);
+          },
+          defaultValue: this.selectedSlots[slot],
+        });
+      })}
+    `;
   }
 
   render() {
     if (this.customElement)
       return html`
-        <h1>${this.customElement.tagName}</h1>
-        <pre>${this.codeSample}</pre>
-        <pre>propertyKnobs ${JSON.stringify(this.propertyKnobs, null, 4)}</pre>
-        <pre>
-cssPropertiesKnobs ${JSON.stringify(this.cssPropertiesKnobs, null, 4)}</pre
-        >
-        <div id="component-preview"></div>
-        ${this.renderProperties()} ${this.renderCssProps()}
+        <div part="container">
+          <div id="component-preview" part="component-preview"></div>
+          <div id="knobs" part="knobs">
+            ${this.renderPropertiesKnobs()} ${this.renderSlotsKnobs()}
+          </div>
+          <pre id="code" part="code"></pre>
+        </div>
+        <slot hidden name="slots"></slot>
       `;
     return nothing;
   }

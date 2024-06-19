@@ -106,6 +106,9 @@ devDependencies:
   react-dom:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
+  shiki:
+    specifier: ^1.7.0
+    version: 1.7.0
   storybook:
     specifier: ^7.6.16
     version: 7.6.16
@@ -3473,6 +3476,10 @@ packages:
 
   /@shikijs/core@1.5.1:
     resolution: {integrity: sha512-xjV63pRUBvxA1LsxOUhRKLPh0uUjwBLzAKLdEuYSLIylo71sYuwDcttqNP01Ib1TZlLfO840CXHPlgUUsYFjzg==}
+    dev: true
+
+  /@shikijs/core@1.7.0:
+    resolution: {integrity: sha512-O6j27b7dGmJbR3mjwh/aHH8Ld+GQvA0OQsNO43wKWnqbAae3AYXrhFyScHGX8hXZD6vX2ngjzDFkZY5srtIJbQ==}
     dev: true
 
   /@shikijs/transformers@1.5.1:
@@ -9473,6 +9480,12 @@ packages:
       '@shikijs/core': 1.5.1
     dev: true
 
+  /shiki@1.7.0:
+    resolution: {integrity: sha512-H5pMn4JA7ayx8H0qOz1k2qANq6mZVCMl1gKLK6kWIrv1s2Ial4EmD4s4jE8QB5Dw03d/oCQUxc24sotuyR5byA==}
+    dependencies:
+      '@shikijs/core': 1.7.0
+    dev: true
+
   /side-channel@1.0.5:
     resolution: {integrity: sha512-QcgiIWV4WV7qWExbN5llt6frQB/lBven9pqliLXfGPB+K9ZYXxDozp0wLkHS24kWCm+6YXH/f0HhnObZnZOBnQ==}
     engines: {node: '>= 0.4'}
@@ -10275,7 +10288,7 @@ packages:
       focus-trap: 7.5.4
       mark.js: 8.11.1
       minisearch: 6.3.0
-      shiki: 1.5.1
+      shiki: 1.7.0
       vite: 5.2.11(@types/node@20.12.11)
       vue: 3.4.27(typescript@5.3.3)
     transitivePeerDependencies:

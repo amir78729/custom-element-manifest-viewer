@@ -1,6 +1,6 @@
-import { customElement } from "lit/decorators.js";
-import { CustomElementManifestViewer } from "./custom-element-manifest-viewer";
-import styles from "./custom-element-manifest-viewer.style";
+import { customElement } from 'lit/decorators.js';
+import { CustomElementManifestViewer } from './custom-element-manifest-viewer';
+import styles from './custom-element-manifest-viewer.style';
 
 /**
  * ### Example
@@ -60,13 +60,13 @@ import styles from "./custom-element-manifest-viewer.style";
  * @cssprop [--cemv-avatar-width-xLarge=72px]
  * @cssprop [--cemv-avatar-height-xLarge=72px]
  */
-@customElement("custom-element-manifest-viewer")
+@customElement('custom-element-manifest-viewer')
 export class CustomElementManifestViewerComponent extends CustomElementManifestViewer {
   static readonly styles = [styles];
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "custom-element-manifest-viewer": CustomElementManifestViewerComponent;
+    'custom-element-manifest-viewer': CustomElementManifestViewerComponent;
   }
 }
