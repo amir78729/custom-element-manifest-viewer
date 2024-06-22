@@ -1,6 +1,6 @@
 <div align="center">
 
-# Custom Element Manifest Viewer (`cemv`)
+# Custom Element Manifest Viewer (`cemnama`)
 
 A Custom Element Manifest Viewer component developed in web components
   
@@ -12,29 +12,29 @@ A Custom Element Manifest Viewer component developed in web components
 ### Using `npm`
 
 ```bash
-npm i cemv
+npm i cemnama
 ```
 
 ### Using `pnpm`
 
 ```bash
-pnpm i cemv
+pnpm i cemnama
 ```
 
 
 ### Using `yarn`
 
 ```bash
-yarn add cemv
+yarn add cemnama
 ```
 
 ## Usage
 
-First you need to mport `cemv` and your component in your code
+First you need to mport `cemnama` and your component in your code
 
 
 ```js
-import "cemv"
+import "cemnama"
 import "path/to/my-beautiful-component"
 ```
 

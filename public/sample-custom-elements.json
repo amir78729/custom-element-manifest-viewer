@@ -1272,63 +1272,63 @@
           "name": "CustomElementManifestViewerComponent",
           "cssProperties": [
             {
-              "name": "--cemv-avatar-background-color",
-              "default": "--cemv-sys-color-surface-secondary"
+              "name": "--cemnama-avatar-background-color",
+              "default": "--cemnama-sys-color-surface-secondary"
             },
             {
-              "name": "--cemv-avatar-border-color",
-              "default": "--cemv-sys-color-border-primary"
+              "name": "--cemnama-avatar-border-color",
+              "default": "--cemnama-sys-color-border-primary"
             },
             {
-              "name": "--cemv-avatar-border-radius",
-              "default": "--cemv-sys-radius-full"
+              "name": "--cemnama-avatar-border-radius",
+              "default": "--cemnama-sys-radius-full"
             },
             {
-              "name": "--cemv-avatar-width-xxSmall",
-              "default": "--cemv-sys-spacing-8"
+              "name": "--cemnama-avatar-width-xxSmall",
+              "default": "--cemnama-sys-spacing-8"
             },
             {
-              "name": "--cemv-avatar-height-xxSmall",
-              "default": "--cemv-sys-spacing-8"
+              "name": "--cemnama-avatar-height-xxSmall",
+              "default": "--cemnama-sys-spacing-8"
             },
             {
-              "name": "--cemv-avatar-width-xSmall",
-              "default": "--cemv-sys-spacing-9"
+              "name": "--cemnama-avatar-width-xSmall",
+              "default": "--cemnama-sys-spacing-9"
             },
             {
-              "name": "--cemv-avatar-height-xSmall",
-              "default": "--cemv-sys-spacing-9"
+              "name": "--cemnama-avatar-height-xSmall",
+              "default": "--cemnama-sys-spacing-9"
             },
             {
-              "name": "--cemv-avatar-width-small",
-              "default": "--cemv-sys-spacing-10"
+              "name": "--cemnama-avatar-width-small",
+              "default": "--cemnama-sys-spacing-10"
             },
             {
-              "name": "--cemv-avatar-height-small",
-              "default": "--cemv-sys-spacing-10"
+              "name": "--cemnama-avatar-height-small",
+              "default": "--cemnama-sys-spacing-10"
             },
             {
-              "name": "--cemv-avatar-width-medium",
-              "default": "--cemv-sys-spacing-11"
+              "name": "--cemnama-avatar-width-medium",
+              "default": "--cemnama-sys-spacing-11"
             },
             {
-              "name": "--cemv-avatar-height-medium",
-              "default": "--cemv-sys-spacing-11"
+              "name": "--cemnama-avatar-height-medium",
+              "default": "--cemnama-sys-spacing-11"
             },
             {
-              "name": "--cemv-avatar-width-large",
+              "name": "--cemnama-avatar-width-large",
               "default": "56px"
             },
             {
-              "name": "--cemv-avatar-height-large",
+              "name": "--cemnama-avatar-height-large",
               "default": "56px"
             },
             {
-              "name": "--cemv-avatar-width-xLarge",
+              "name": "--cemnama-avatar-width-xLarge",
               "default": "72px"
             },
             {
-              "name": "--cemv-avatar-height-xLarge",
+              "name": "--cemnama-avatar-height-xLarge",
               "default": "72px"
             }
           ],

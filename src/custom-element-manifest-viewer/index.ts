@@ -38,27 +38,27 @@ import styles from './custom-element-manifest-viewer.style.js';
  * @csspart [placeholder] - The container that wraps the avatar's placeholder.
  * @csspart [image] - The avatar image. Only shown when the image is present.
  *
- * @cssprop [--cemv-avatar-background-color=--cemv-sys-color-surface-secondary]
- * @cssprop [--cemv-avatar-border-color=--cemv-sys-color-border-primary]
- * @cssprop [--cemv-avatar-border-radius=--cemv-sys-radius-full]
+ * @cssprop [--cemnama-avatar-background-color=--cemnama-sys-color-surface-secondary]
+ * @cssprop [--cemnama-avatar-border-color=--cemnama-sys-color-border-primary]
+ * @cssprop [--cemnama-avatar-border-radius=--cemnama-sys-radius-full]
  *
- * @cssprop [--cemv-avatar-width-xxSmall=--cemv-sys-spacing-8]
- * @cssprop [--cemv-avatar-height-xxSmall=--cemv-sys-spacing-8]
+ * @cssprop [--cemnama-avatar-width-xxSmall=--cemnama-sys-spacing-8]
+ * @cssprop [--cemnama-avatar-height-xxSmall=--cemnama-sys-spacing-8]
  *
- * @cssprop [--cemv-avatar-width-xSmall=--cemv-sys-spacing-9]
- * @cssprop [--cemv-avatar-height-xSmall=--cemv-sys-spacing-9]
+ * @cssprop [--cemnama-avatar-width-xSmall=--cemnama-sys-spacing-9]
+ * @cssprop [--cemnama-avatar-height-xSmall=--cemnama-sys-spacing-9]
  *
- * @cssprop [--cemv-avatar-width-small=--cemv-sys-spacing-10]
- * @cssprop [--cemv-avatar-height-small=--cemv-sys-spacing-10]
+ * @cssprop [--cemnama-avatar-width-small=--cemnama-sys-spacing-10]
+ * @cssprop [--cemnama-avatar-height-small=--cemnama-sys-spacing-10]
  *
- * @cssprop [--cemv-avatar-width-medium=--cemv-sys-spacing-11]
- * @cssprop [--cemv-avatar-height-medium=--cemv-sys-spacing-11]
+ * @cssprop [--cemnama-avatar-width-medium=--cemnama-sys-spacing-11]
+ * @cssprop [--cemnama-avatar-height-medium=--cemnama-sys-spacing-11]
  *
- * @cssprop [--cemv-avatar-width-large=56px]
- * @cssprop [--cemv-avatar-height-large=56px]
+ * @cssprop [--cemnama-avatar-width-large=56px]
+ * @cssprop [--cemnama-avatar-height-large=56px]
  *
- * @cssprop [--cemv-avatar-width-xLarge=72px]
- * @cssprop [--cemv-avatar-height-xLarge=72px]
+ * @cssprop [--cemnama-avatar-width-xLarge=72px]
+ * @cssprop [--cemnama-avatar-height-xLarge=72px]
  */
 @customElement('custom-element-manifest-viewer')
 export class CustomElementManifestViewerComponent extends CustomElementManifestViewer {
