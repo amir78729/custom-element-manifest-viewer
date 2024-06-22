@@ -8,7 +8,7 @@ import {
   removeBackticks,
   removeQuotes,
   renderKnob,
-} from './utils';
+} from './utils.js';
 import { getHighlighter, Highlighter } from 'shiki';
 import type { PropertyLike } from 'custom-elements-manifest';
 

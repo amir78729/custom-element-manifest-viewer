@@ -1,6 +1,6 @@
 import { customElement } from 'lit/decorators.js';
-import { CustomElementManifestViewer } from './custom-element-manifest-viewer';
-import styles from './custom-element-manifest-viewer.style';
+import { CustomElementManifestViewer } from './custom-element-manifest-viewer.js';
+import styles from './custom-element-manifest-viewer.style.js';
 
 /**
  * ### Example

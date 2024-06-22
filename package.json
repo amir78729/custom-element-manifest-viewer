@@ -1,20 +1,25 @@
 {
-  "name": "custom-element-manifest-viewer",
+  "name": "cemnama",
+  "description": "a Custom Element Manifest Viewer component developed in web components",
   "author": "Amirhossein Alibakhshi",
-  "version": "0.0.1",
+  "version": "0.0.0-alpha-1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amir78729/custom-element-manifest-viewer.git"
+  },
   "files": [
-    "dist/**/*.js",
-    "dist/**/*.js.map",
-    "dist/**/*.d.ts",
-    "dist/**/*.css"
+    "dist"
   ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "rm -rf dist && tsc && pnpm analyze && cp -r ./tokens ./dist && cp -r ./styles ./dist",
+    "build": "rm -rf dist && tsc",
     "storybook": "storybook dev -p 3001",
     "build-storybook": "storybook build"
   },
   "devDependencies": {
+    "@tapsioss/web-components": "0.0.0-alpha-2",
     "@custom-elements-manifest/analyzer": "^0.10.2",
     "@eslint/js": "^9.1.1",
     "@open-wc/lit-helpers": "^0.7.0",
@@ -43,7 +48,6 @@
     "prettier": "^3.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "shiki": "^1.7.0",
     "storybook": "^7.6.16",
     "tslib": "^2.6.2",
     "typescript": "^5.3.3",
@@ -51,9 +55,8 @@
     "vitepress": "^1.1.4"
   },
   "dependencies": {
-    "@shoelace-style/shoelace": "^2.15.1",
-    "@tapsioss/web-components": "0.0.0-alpha-2",
     "immer": "^10.1.1",
+    "shiki": "^1.7.0",
     "lit": "^3.1.2",
     "tslib": "^2.4.0"
   }
