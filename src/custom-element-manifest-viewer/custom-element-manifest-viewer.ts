@@ -3,6 +3,7 @@ import { property, query, state } from 'lit/decorators.js';
 import { produce } from 'immer';
 import type { CustomElement } from 'custom-elements-manifest/schema';
 import {
+  createElementFromHTML,
   fetchManifest,
   getAttributes,
   removeBackticks,
@@ -69,24 +70,46 @@ export class CustomElementManifestViewer extends LitElement {
   }
 
   private setSlotKnobs() {
-    const slot = this.querySelectorAll<HTMLSlotElement>(`[slot]`);
+    const slot = this.querySelectorAll<HTMLTemplateElement>(`template`);
+
     this.slotKnobs = produce(this.slotKnobs, (draft) => {
-      slot.forEach((slot) => {
-        if (slot.getAttribute('data-knob-type') === 'slot') {
-          const slotCategory = slot.getAttribute('slot');
-          const slotName = slot.getAttribute('title');
+      slot.forEach((s) => {
+        if (s.getAttribute('datatype') === 'slot') {
+          const slotContent = createElementFromHTML(s.innerHTML);
+          let slotCategory = 'default';
+          if (slotContent?.getAttribute('slot')) {
+            //@ts-expect-error
+            slotCategory = slotContent.getAttribute('slot');
+          }
+          const slotName = s.getAttribute('title');
+
           if (draft && slotName && slotCategory) {
             if (!draft[slotCategory]) {
               draft[slotCategory] = {};
             }
-            draft[slotCategory][slotName] = slot.outerHTML.replace(
-              /\s(data-knob-type|title|style)="[^"]*"/g,
-              '',
-            );
+            draft[slotCategory][slotName] = s.innerHTML
+              .trim()
+              .replace(/\s(datatype|title|style)="[^"]*"/g, '');
           }
         }
       });
     });
+  }
+
+  private setDefaultValues() {
+    const slot = this.querySelectorAll<HTMLTemplateElement>(`template`);
+
+    this.propertyKnobs = produce(this.propertyKnobs, (draft) => {
+      slot.forEach((s) => {
+        if (s.getAttribute('datatype') === 'prop-default-value') {
+          const slotName = s.getAttribute('title');
+          if (slotName && draft) {
+            draft[slotName] = s.innerHTML.trim();
+          }
+        }
+      });
+    });
+    console.log('🐕 sag this.propertyKnobs', this.propertyKnobs); // TODO: REMOVE ME ⚠️
   }
 
   async connectedCallback() {
@@ -115,6 +138,7 @@ export class CustomElementManifestViewer extends LitElement {
       langs: ['html'],
     });
 
+    this.setDefaultValues();
     this.setSlotKnobs();
     this.updateCodeSample();
   }
@@ -158,8 +182,9 @@ export class CustomElementManifestViewer extends LitElement {
                     : 'string',
                   description: property?.description,
                   defaultValue:
-                    property?.default &&
-                    removeBackticks(removeQuotes(property.default)),
+                    (property?.default &&
+                      removeBackticks(removeQuotes(property.default))) ||
+                    this.propertyKnobs[property.name],
                   // @ts-expect-error
                   onChange: (e: Event) => {
                     const input = e.target as HTMLInputElement;

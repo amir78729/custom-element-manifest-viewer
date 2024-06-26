@@ -98,34 +98,77 @@ const Template: Story<ArgTypes> = ({ tagName}) => html`
   </custom-element-manifest-viewer>
 `;
 
-
 export const Default = Template.bind({});
 
 Default.args = {
   tagName: 'tap-avatar'
 };
 
+// ---
+
 const Slots: Story<ArgTypes> = ({ tagName}) => html`
   <custom-element-manifest-viewer tag-name='tap-row' src=${manifestSource}>
-    <tap-icon-default color="black" data-knob-type="slot" slot="leading" title="icon"></tap-icon-default>
-    <tap-checkbox data-knob-type="slot" slot="leading" title="checkbox"></tap-checkbox>
-    <tap-radio data-knob-type="slot" slot="leading" title="radio"></tap-radio>
-    <tap-avatar data-knob-type="slot" slot="leading" title="avatar" size="small" image="https://picsum.photos/100"></tap-avatar>
-    <tap-button data-knob-type="slot" slot="trailing" title="button">پرداخت</tap-button>
-    <tap-badge data-knob-type="slot" slot="trailing" title="badge" value="1" variant="error" type="numeral"></tap-badge>
-    <tap-icon-default color="black" data-knob-type="slot" slot="trailing" title="icon"></tap-icon-default>
-    <p color="black" data-knob-type="slot" slot="trailing" title="price">۱۵۷٬۰۰۰ تومان</p>
-    <p color="black" data-knob-type="slot" slot="content" title="address">انتخاب آدرس</p>
-    <p color="black" data-knob-type="slot" slot="content" title="text">متن ساده</p>
+    <template datatype="slot" title="checkbox">
+      <tap-checkbox slot="leading"></tap-checkbox>
+    </template>
+    <template datatype="slot" title="radio">
+      <tap-radio slot="leading"></tap-radio>
+    </template>
+    <template datatype="slot" title="avatar">
+      <tap-avatar slot="leading" size="small" image="https://picsum.photos/100"></tap-avatar>
+    </template>
+    <template datatype="slot" title="button">
+      <tap-button slot="trailing">پرداخت</tap-button>
+    </template>
+    <template datatype="slot" title="badge">
+      <tap-badge slot="trailing" value="1" variant="error" type="numeral"></tap-badge>
+    </template>
+    <template datatype="slot" title="icon">
+      <tap-icon-default color="black" slot="trailing"></tap-icon-default>
+    </template>
+    <template datatype="slot" title="price">
+      <p color="black" slot="trailing">۱۵۷٬۰۰۰ تومان</p>
+    </template>
+    <template datatype="slot" title="address">
+      <p color="black" slot="content">انتخاب آدرس</p>
+    </template>
+    <template datatype="slot" title="text">
+      <p color="black" slot="content">متن ساده</p>
+    </template>
+  </custom-element-manifest-viewer>
+  
+  <hr>
+  
+  <custom-element-manifest-viewer tag-name='tap-button' src=${manifestSource}>
+    <template datatype="slot" title="default">
+      Click!
+    </template>
   </custom-element-manifest-viewer>
 `;
-
 
 export const CustomSlots = Slots.bind({});
 
 CustomSlots.args = {
   tagName: 'tap-avatar'
 };
+
+// ---
+
+const DefaultTemplate: Story<ArgTypes> = ({ tagName}) => html`
+  <custom-element-manifest-viewer tag-name='tap-avatar' src=${manifestSource}>
+    <template datatype="prop-default-value" title="image">
+      https://picsum.photos/200
+    </template>
+  </custom-element-manifest-viewer>
+`;
+
+export const DefaultValue = DefaultTemplate.bind({});
+
+DefaultValue.args = {
+  tagName: 'tap-avatar'
+};
+
+// ---
 
 const Theme: Story<ArgTypes> = ({ tagName}) => html`
   <style>
@@ -200,7 +243,6 @@ const Theme: Story<ArgTypes> = ({ tagName}) => html`
   <custom-element-manifest-viewer tag-name=${tagName} src=${manifestSource}>
   </custom-element-manifest-viewer>
 `;
-
 
 export const UsingTheme = Theme.bind({});
 
