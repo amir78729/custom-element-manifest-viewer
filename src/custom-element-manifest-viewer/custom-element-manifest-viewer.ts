@@ -109,7 +109,6 @@ export class CustomElementManifestViewer extends LitElement {
         }
       });
     });
-    console.log('🐕 sag this.propertyKnobs', this.propertyKnobs); // TODO: REMOVE ME ⚠️
   }
 
   async connectedCallback() {
