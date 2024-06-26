@@ -180,10 +180,11 @@ export class CustomElementManifestViewer extends LitElement {
                     ? removeBackticks(property.type.text)
                     : 'string',
                   description: property?.description,
+                  // @ts-expect-error
                   defaultValue:
                     (property?.default &&
                       removeBackticks(removeQuotes(property.default))) ||
-                    this.propertyKnobs[property.name],
+                    this.propertyKnobs?.[property.name],
                   // @ts-expect-error
                   onChange: (e: Event) => {
                     const input = e.target as HTMLInputElement;
