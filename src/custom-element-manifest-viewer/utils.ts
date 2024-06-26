@@ -114,3 +114,10 @@ export function getAttributes(properties: Record<string, unknown>): string {
     .replace(/'false'/g, 'false')
     .replace(/'true'/g, 'true');
 }
+
+export function createElementFromHTML(htmlString: string): HTMLElement | null {
+  const template = document.createElement('template');
+  htmlString = htmlString.trim(); // Trim the string to avoid issues with leading/trailing spaces
+  template.innerHTML = htmlString;
+  return template.content.firstElementChild as HTMLElement;
+}
