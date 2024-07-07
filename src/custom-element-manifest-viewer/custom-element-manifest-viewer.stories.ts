@@ -36,7 +36,7 @@ import type { Theme } from "./types";
 const isDev = process.env.NODE_ENV === "development";
 
 const manifestSource = isDev ? "../sample-custom-elements.json" : "../custom-element-manifest-viewer/sample-custom-elements.json";
-const configSource = isDev ? "../sample-custom-elements.json" : "../custom-element-manifest-viewer/sample-custom-elements.json";
+const configSource = isDev ? "../custom-elements-config.json" : "../custom-element-manifest-viewer/custom-elements-config.json";
 
 export default {
   title: "custom-element-manifest-viewer",
@@ -103,7 +103,7 @@ interface ArgTypes {
 }
 
 const Template: Story<ArgTypes> = ({ tagName, theme }) => html`
-  <custom-element-manifest-viewer tag-name=${tagName} .theme=${theme} manifest=${manifestSource}>
+  <custom-element-manifest-viewer config=${configSource} tag-name=${tagName} .theme=${theme} manifest=${manifestSource}>
   </custom-element-manifest-viewer>
 `;
 
@@ -116,39 +116,12 @@ Default.args = {
 // ---
 
 const Slots: Story<ArgTypes> = ({ tagName, theme }) => html`
-  <custom-element-manifest-viewer tag-name='tap-row' .theme=${theme} manifest=${manifestSource}>
-    <template datatype="slot" title="checkbox">
-      <tap-checkbox slot="leading"></tap-checkbox>
-    </template>
-    <template datatype="slot" title="radio">
-      <tap-radio slot="leading"></tap-radio>
-    </template>
-    <template datatype="slot" title="avatar">
-      <tap-avatar slot="leading" size="small" image="https://picsum.photos/100"></tap-avatar>
-    </template>
-    <template datatype="slot" title="button">
-      <tap-button slot="trailing">پرداخت</tap-button>
-    </template>
-    <template datatype="slot" title="badge">
-      <tap-badge slot="trailing" value="1" variant="error" type="numeral"></tap-badge>
-    </template>
-    <template datatype="slot" title="icon">
-      <tap-icon-default color="black" slot="trailing"></tap-icon-default>
-    </template>
-    <template datatype="slot" title="price">
-      <p color="black" slot="trailing">۱۵۷٬۰۰۰ تومان</p>
-    </template>
-    <template datatype="slot" title="address">
-      <p color="black" slot="content">انتخاب آدرس</p>
-    </template>
-    <template datatype="slot" title="text">
-      <p color="black" slot="content">متن ساده</p>
-    </template>
+  <custom-element-manifest-viewer config=${configSource} tag-name='tap-row' .theme=${theme} manifest=${manifestSource}>
   </custom-element-manifest-viewer>
 
   <hr>
 
-  <custom-element-manifest-viewer tag-name='tap-button' manifest=${manifestSource}>
+  <custom-element-manifest-viewer config=${configSource} tag-name='tap-button' manifest=${manifestSource}>
     <template datatype="slot" title="default">
       Click!
     </template>
@@ -164,7 +137,7 @@ CustomSlots.args = {
 // ---
 
 const DefaultTemplate: Story<ArgTypes> = ({ tagName, theme }) => html`
-  <custom-element-manifest-viewer tag-name='tap-avatar' .theme=${theme} manifest=${manifestSource}>
+  <custom-element-manifest-viewer config=${configSource}   tag-name='tap-avatar' .theme=${theme} manifest=${manifestSource}>
     <template datatype="prop-default-value" title="image">
       https://picsum.photos/200
     </template>
@@ -249,12 +222,13 @@ const Theme: Story<ArgTypes> = ({ tagName, theme }) => html`
       border-radius: 0 0 8px 8px;
     }
   </style>
-  <custom-element-manifest-viewer tag-name=${tagName} .theme=${theme} manifest=${manifestSource}>
+  <custom-element-manifest-viewer config=${configSource}   tag-name=${tagName} .theme=${theme} manifest=${manifestSource}>
   </custom-element-manifest-viewer>
 `;
 
 export const UsingTheme = Theme.bind({});
 
 UsingTheme.args = {
-  tagName: "tap-avatar"
+  tagName: "tap-avatar",
+  theme: 'github-dark'
 };

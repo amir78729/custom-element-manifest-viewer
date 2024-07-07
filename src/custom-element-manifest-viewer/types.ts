@@ -45,3 +45,10 @@ export type Theme =
   | 'vitesse-black'
   | 'vitesse-dark'
   | 'vitesse-light';
+
+export type Config = {
+  propertyDefaultValues: Record<string, unknown>;
+  slotKnobs: Record<string, Record<string, string>>;
+};
+
+export type ConfigFile = Record<string, Config>;
