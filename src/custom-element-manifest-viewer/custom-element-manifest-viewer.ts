@@ -12,9 +12,13 @@ import {
 } from './utils.js';
 import { getHighlighter, Highlighter } from 'shiki';
 import type { PropertyLike } from 'custom-elements-manifest';
+import { Theme } from './types';
+import { themes } from './constants';
 
 export class CustomElementManifestViewer extends LitElement {
-  @property() src: string = '';
+  @property({ reflect: true }) theme: Theme = 'github-dark-default';
+
+  @property() manifest: string = '';
 
   @property({ attribute: 'tag-name' }) tagName: string = '';
 
@@ -60,7 +64,7 @@ export class CustomElementManifestViewer extends LitElement {
     if (this.codeSample) {
       const highlightedCode = this.highlighter?.codeToHtml(this.codeSample, {
         lang: 'html',
-        theme: 'github-dark-default',
+        theme: this.theme,
       });
       if (this.codeSection) {
         if (highlightedCode) this.codeSection.innerHTML = highlightedCode;
@@ -113,7 +117,7 @@ export class CustomElementManifestViewer extends LitElement {
 
   async connectedCallback() {
     super.connectedCallback();
-    const manifest = await fetchManifest(this.src);
+    const manifest = await fetchManifest(this.manifest);
     if (manifest) {
       this.customElement = manifest.modules?.find(
         (module) =>
@@ -133,7 +137,7 @@ export class CustomElementManifestViewer extends LitElement {
     }
 
     this.highlighter = await getHighlighter({
-      themes: ['github-dark-default'],
+      themes: [this.theme],
       langs: ['html'],
     });
 
