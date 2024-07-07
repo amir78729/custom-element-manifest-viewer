@@ -49,5 +49,5 @@ Now you can see your configurable component preview!
 
 ## Related Links
 
-- [Official Documentation]()
+- [Official Documentation](https://github.com/amir78729/custom-element-manifest-viewer/wiki)
 - [Storybook](https://amir78729.github.io/custom-element-manifest-viewer/?path=/story/custom-element-manifest-viewer--custom-slots)
