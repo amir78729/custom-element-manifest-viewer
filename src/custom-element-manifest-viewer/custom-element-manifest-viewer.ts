@@ -3,7 +3,7 @@ import { property, query, state } from 'lit/decorators.js';
 import { produce } from 'immer';
 import type { CustomElement } from 'custom-elements-manifest/schema';
 import {
-  createElementFromHTML,
+  fetchConfig,
   fetchManifest,
   getAttributes,
   removeBackticks,
@@ -12,13 +12,20 @@ import {
 } from './utils.js';
 import { getHighlighter, Highlighter } from 'shiki';
 import type { PropertyLike } from 'custom-elements-manifest';
+import { Config, Theme } from './types';
 
 export class CustomElementManifestViewer extends LitElement {
-  @property() src: string = '';
+  @property({ reflect: true }) theme: Theme = 'github-dark-default';
+
+  @property() manifest: string = '';
+
+  @property() config: string = '';
 
   @property({ attribute: 'tag-name' }) tagName: string = '';
 
   @state() customElement?: CustomElement;
+
+  @state() customElementConfig?: Config;
 
   @state() propertyKnobs?: Record<string, unknown> = {};
 
@@ -46,6 +53,7 @@ export class CustomElementManifestViewer extends LitElement {
       if (key === 'default') {
         slotContent = slotContent.replace(` slot="${key}"`, '');
       }
+
       content += `  ${slotContent}\n`;
     });
     return content;
@@ -54,13 +62,26 @@ export class CustomElementManifestViewer extends LitElement {
   private updateCodeSample() {
     if (this.componentPreview && this.propertyKnobs) {
       this.codeSample = `<${this.customElement?.tagName} ${getAttributes(this.propertyKnobs)}>${this.renderSlots()}</${this.customElement?.tagName}>`;
-      this.componentPreview.innerHTML = this.codeSample;
+
+      const preview = document.createElement(this.tagName);
+
+      Object.entries(this.propertyKnobs).forEach(([key, value]) => {
+        // @ts-expect-error
+        preview.setAttribute(key, value);
+        // @ts-expect-error
+        preview[key] = value;
+      });
+
+      preview.innerHTML = this.renderSlots();
+
+      this.componentPreview.innerHTML = '';
+      this.componentPreview.appendChild(preview);
     }
 
     if (this.codeSample) {
       const highlightedCode = this.highlighter?.codeToHtml(this.codeSample, {
         lang: 'html',
-        theme: 'github-dark-default',
+        theme: this.theme,
       });
       if (this.codeSection) {
         if (highlightedCode) this.codeSection.innerHTML = highlightedCode;
@@ -70,50 +91,43 @@ export class CustomElementManifestViewer extends LitElement {
   }
 
   private setSlotKnobs() {
-    const slot = this.querySelectorAll<HTMLTemplateElement>(`template`);
-
-    this.slotKnobs = produce(this.slotKnobs, (draft) => {
-      slot.forEach((s) => {
-        if (s.getAttribute('datatype') === 'slot') {
-          const slotContent = createElementFromHTML(s.innerHTML);
-          let slotCategory = 'default';
-          if (slotContent?.getAttribute('slot')) {
-            //@ts-expect-error
-            slotCategory = slotContent.getAttribute('slot');
-          }
-          const slotName = s.getAttribute('title');
-
-          if (draft && slotName && slotCategory) {
-            if (!draft[slotCategory]) {
-              draft[slotCategory] = {};
-            }
-            draft[slotCategory][slotName] = s.innerHTML
-              .trim()
-              .replace(/\s(datatype|title|style)="[^"]*"/g, '');
-          }
-        }
+    if (this.customElementConfig?.slotKnobs) {
+      this.slotKnobs = produce(this.slotKnobs, (draft) => {
+        Object.entries(this.customElementConfig?.slotKnobs || {}).forEach(
+          ([key, value]) => {
+            Object.entries(value).forEach(([slotName, slotContent]) => {
+              if (!draft[key]) {
+                draft[key] = {};
+              }
+              if (draft) {
+                draft[key][slotName] = slotContent;
+              }
+            });
+          },
+        );
       });
-    });
+    }
   }
 
   private setDefaultValues() {
-    const slot = this.querySelectorAll<HTMLTemplateElement>(`template`);
-
-    this.propertyKnobs = produce(this.propertyKnobs, (draft) => {
-      slot.forEach((s) => {
-        if (s.getAttribute('datatype') === 'prop-default-value') {
-          const slotName = s.getAttribute('title');
-          if (slotName && draft) {
-            draft[slotName] = s.innerHTML.trim();
+    if (this.customElementConfig?.propertyDefaultValues) {
+      this.propertyKnobs = produce(this.propertyKnobs, (draft) => {
+        Object.entries(
+          this.customElementConfig?.propertyDefaultValues || {},
+        ).forEach(([key, value]) => {
+          if (draft) {
+            draft[key] = value;
           }
-        }
+        });
       });
-    });
+    }
   }
 
   async connectedCallback() {
     super.connectedCallback();
-    const manifest = await fetchManifest(this.src);
+    const manifest = await fetchManifest(this.manifest);
+    this.customElementConfig = (await fetchConfig(this.config))?.[this.tagName];
+
     if (manifest) {
       this.customElement = manifest.modules?.find(
         (module) =>
@@ -123,7 +137,7 @@ export class CustomElementManifestViewer extends LitElement {
       this.propertyKnobs = produce(this.propertyKnobs, (draft) => {
         (this.customElement?.members as PropertyLike[])?.forEach(
           (member: PropertyLike) => {
-            if (draft && member.default != null)
+            if (draft && member?.default != null)
               draft[member.name] = ['true', 'false'].includes(member.default)
                 ? member.default === 'true'
                 : removeQuotes(member.default);
@@ -132,13 +146,12 @@ export class CustomElementManifestViewer extends LitElement {
       });
     }
 
-    this.highlighter = await getHighlighter({
-      themes: ['github-dark-default'],
-      langs: ['html'],
-    });
-
     this.setDefaultValues();
     this.setSlotKnobs();
+    this.highlighter = await getHighlighter({
+      themes: [this.theme],
+      langs: ['html'],
+    });
     this.updateCodeSample();
   }
 
@@ -206,7 +219,11 @@ export class CustomElementManifestViewer extends LitElement {
   private renderSlotsKnobs() {
     if (Object.keys(this.slotKnobs).length > 0)
       return html`
-        <b>Slots</b>
+        ${Object.values(this.slotKnobs).some(
+          (knob) => Object.keys(knob)?.length > 1,
+        )
+          ? html`<b>Slots</b>`
+          : nothing}
         ${Object.entries(this.slotKnobs).map(([slot]) => {
           const type = Object.keys(this.slotKnobs?.[slot] || {}).join('|');
           return renderKnob({

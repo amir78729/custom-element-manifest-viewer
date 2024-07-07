@@ -1,5 +1,6 @@
-import type { CustomElement, Package } from 'custom-elements-manifest';
-import { html, nothing } from 'lit';
+import type { CustomElement, Package } from "custom-elements-manifest";
+import { html, nothing } from "lit";
+import { ConfigFile } from "./types";
 
 export function hasCustomElements(
   manifest?: Package | null,
@@ -23,6 +24,16 @@ export async function fetchManifest(src: string): Promise<Package | null> {
       return manifest;
     }
     throw new Error(`No element definitions found at ${src}`);
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
+export async function fetchConfig(src: string): Promise<ConfigFile | null> {
+  try {
+    const file = await fetch(src);
+    return (await file.json()) as ConfigFile;
   } catch (e) {
     console.error(e);
     return null;

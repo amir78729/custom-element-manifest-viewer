@@ -2,7 +2,7 @@
   "name": "cemnama",
   "description": "a Custom Element Manifest Viewer component developed in web components",
   "author": "Amirhossein Alibakhshi",
-  "version": "0.0.0-alpha-3",
+  "version": "0.0.0-alpha-4",
   "repository": {
     "type": "git",
     "url": "https://github.com/amir78729/custom-element-manifest-viewer.git"

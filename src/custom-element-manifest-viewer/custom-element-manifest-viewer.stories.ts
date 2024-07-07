@@ -1,6 +1,6 @@
-import { html, TemplateResult } from 'lit';
-import './index.js';
-import { Meta } from '@storybook/web-components';
+import { html, TemplateResult } from "lit";
+import "./index.js";
+import { Meta } from "@storybook/web-components";
 
 import "@tapsioss/web-components/dist/avatar";
 import "@tapsioss/web-components/dist/badge";
@@ -30,18 +30,21 @@ import "@tapsioss/web-components/dist/toast";
 import "@tapsioss/web-components/dist/tooltip";
 import "@tapsioss/web-components/dist/button";
 import "@tapsioss/web-components/dist/styles/theme.css";
+import { themes } from "./constants";
+import type { Theme } from "./types";
 
-const isDev =  process.env.NODE_ENV === 'development';
+const isDev = process.env.NODE_ENV === "development";
 
-const manifestSource = isDev ? '../sample-custom-elements.json' : '../custom-element-manifest-viewer/sample-custom-elements.json'
+const manifestSource = isDev ? "../sample-custom-elements.json" : "../custom-element-manifest-viewer/sample-custom-elements.json";
+const configSource = isDev ? "../custom-elements-config.json" : "../custom-element-manifest-viewer/custom-elements-config.json";
 
 export default {
-  title: 'custom-element-manifest-viewer',
-  component: 'custom-element-manifest-viewer',
+  title: "custom-element-manifest-viewer",
+  component: "custom-element-manifest-viewer",
   argTypes: {
-    'tagName': {
-      description: 'target tag name',
-      control: { type: 'select' },
+    "tagName": {
+      description: "target tag name",
+      control: { type: "select" },
       options: [
         "tap-avatar",
         "tap-badge",
@@ -75,10 +78,15 @@ export default {
         "tap-textarea",
         "tap-toast",
         "tap-tooltip",
-        "tap-button",
+        "tap-button"
       ]
     },
-  },
+    "theme": {
+      description: "code preview theme",
+      control: { type: "select" },
+      options: themes
+    }
+  }
 } as Meta;
 
 interface Story<T> {
@@ -89,57 +97,31 @@ interface Story<T> {
 }
 
 interface ArgTypes {
-  src: string;
+  manifest: string;
   tagName: string;
+  theme: Theme;
 }
 
-const Template: Story<ArgTypes> = ({ tagName}) => html`
-  <custom-element-manifest-viewer tag-name=${tagName} src=${manifestSource}>
+const Template: Story<ArgTypes> = ({ tagName, theme }) => html`
+  <custom-element-manifest-viewer config=${configSource} tag-name=${tagName} .theme=${theme} manifest=${manifestSource}>
   </custom-element-manifest-viewer>
 `;
 
 export const Default = Template.bind({});
 
 Default.args = {
-  tagName: 'tap-avatar'
+  tagName: "tap-avatar"
 };
 
 // ---
 
-const Slots: Story<ArgTypes> = ({ tagName}) => html`
-  <custom-element-manifest-viewer tag-name='tap-row' src=${manifestSource}>
-    <template datatype="slot" title="checkbox">
-      <tap-checkbox slot="leading"></tap-checkbox>
-    </template>
-    <template datatype="slot" title="radio">
-      <tap-radio slot="leading"></tap-radio>
-    </template>
-    <template datatype="slot" title="avatar">
-      <tap-avatar slot="leading" size="small" image="https://picsum.photos/100"></tap-avatar>
-    </template>
-    <template datatype="slot" title="button">
-      <tap-button slot="trailing">پرداخت</tap-button>
-    </template>
-    <template datatype="slot" title="badge">
-      <tap-badge slot="trailing" value="1" variant="error" type="numeral"></tap-badge>
-    </template>
-    <template datatype="slot" title="icon">
-      <tap-icon-default color="black" slot="trailing"></tap-icon-default>
-    </template>
-    <template datatype="slot" title="price">
-      <p color="black" slot="trailing">۱۵۷٬۰۰۰ تومان</p>
-    </template>
-    <template datatype="slot" title="address">
-      <p color="black" slot="content">انتخاب آدرس</p>
-    </template>
-    <template datatype="slot" title="text">
-      <p color="black" slot="content">متن ساده</p>
-    </template>
+const Slots: Story<ArgTypes> = ({ tagName, theme }) => html`
+  <custom-element-manifest-viewer config=${configSource} tag-name='tap-row' .theme=${theme} manifest=${manifestSource}>
   </custom-element-manifest-viewer>
-  
+
   <hr>
-  
-  <custom-element-manifest-viewer tag-name='tap-button' src=${manifestSource}>
+
+  <custom-element-manifest-viewer config=${configSource} tag-name='tap-button' manifest=${manifestSource}>
     <template datatype="slot" title="default">
       Click!
     </template>
@@ -149,13 +131,13 @@ const Slots: Story<ArgTypes> = ({ tagName}) => html`
 export const CustomSlots = Slots.bind({});
 
 CustomSlots.args = {
-  tagName: 'tap-avatar'
+  tagName: "tap-avatar"
 };
 
 // ---
 
-const DefaultTemplate: Story<ArgTypes> = ({ tagName}) => html`
-  <custom-element-manifest-viewer tag-name='tap-avatar' src=${manifestSource}>
+const DefaultTemplate: Story<ArgTypes> = ({ tagName, theme }) => html`
+  <custom-element-manifest-viewer config=${configSource}   tag-name='tap-avatar' .theme=${theme} manifest=${manifestSource}>
     <template datatype="prop-default-value" title="image">
       https://picsum.photos/200
     </template>
@@ -165,12 +147,12 @@ const DefaultTemplate: Story<ArgTypes> = ({ tagName}) => html`
 export const DefaultValue = DefaultTemplate.bind({});
 
 DefaultValue.args = {
-  tagName: 'tap-avatar'
+  tagName: "tap-avatar"
 };
 
 // ---
 
-const Theme: Story<ArgTypes> = ({ tagName}) => html`
+const Theme: Story<ArgTypes> = ({ tagName, theme }) => html`
   <style>
     custom-element-manifest-viewer::part(container) {
       display: flex;
@@ -203,7 +185,7 @@ const Theme: Story<ArgTypes> = ({ tagName}) => html`
 
     custom-element-manifest-viewer::part(component-preview) {
       background-color: #fff;
-      background-image: linear-gradient(45deg,#eee 25%,transparent 25%,transparent 75%,#eee 75%,#eee),linear-gradient(45deg,#eee 25%,transparent 25%,transparent 75%,#eee 75%,#eee);
+      background-image: linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee), linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee);
       background-size: 20px 20px;
       background-position: 0 0, 10px 10px;
       color: black;
@@ -240,12 +222,13 @@ const Theme: Story<ArgTypes> = ({ tagName}) => html`
       border-radius: 0 0 8px 8px;
     }
   </style>
-  <custom-element-manifest-viewer tag-name=${tagName} src=${manifestSource}>
+  <custom-element-manifest-viewer config=${configSource}   tag-name=${tagName} .theme=${theme} manifest=${manifestSource}>
   </custom-element-manifest-viewer>
 `;
 
 export const UsingTheme = Theme.bind({});
 
 UsingTheme.args = {
-  tagName: 'tap-avatar'
+  tagName: "tap-avatar",
+  theme: 'github-dark'
 };
