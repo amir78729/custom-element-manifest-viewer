@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="https://github.com/user-attachments/assets/7a3ed214-8d72-416a-ae38-1b493f9f2166" alt="Cemnama Logo" height="100px">
+
 # Custom Element Manifest Viewer (`cemnama`)
 
 A Custom Element Manifest Viewer component developed in web components
