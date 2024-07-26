@@ -5,6 +5,8 @@
 # Custom Element Manifest Viewer (`cemnama`)
 
 A Custom Element Manifest Viewer component developed in web components
+
+[![npm](https://img.shields.io/npm/v/cemnama)](https://www.npmjs.com/package/cemnama)
   
 </div>
 
